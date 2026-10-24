@@ -1,13 +1,23 @@
 import { createTransport } from 'nodemailer'
 
 const sendOtp = async (email, subject, otp) => {
+  const gmail = process.env.Gmail
+  const password = process.env.Password
+
+  if (!gmail || !password) {
+    throw new Error("Email login is not configured on the server. Set the Gmail and Password environment variables.");
+  }
+
   const transport = createTransport({
     host: "smtp.gmail.com",
     port: 587,
     secure: false, // true for 465, false for other ports
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
-      user: process.env.Gmail,
-      pass: process.env.Password
+      user: gmail,
+      pass: password
     }
   })
 
@@ -58,7 +68,7 @@ const html = `<!DOCTYPE html>
 </html>`
 
   await transport.sendMail({
-    from: process.env.Gmail,
+    from: gmail,
     to: email,
     subject: subject,
     html: html
