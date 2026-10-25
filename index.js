@@ -10,34 +10,39 @@ import addressRoutes from './routes/Address.Router.js'
 import orderRoutes from './routes/Order.Router.js'
 import cors from 'cors'
 import axios from 'axios'
+import { setDefaultResultOrder } from 'node:dns'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 dotenv.config({ path: join(__dirname, ".env") })
 
-
-
-
-
+setDefaultResultOrder("ipv4first")
 
 const app = express()
 
-const url = `https://ecommerce-server-1-qvg5.onrender.com`;
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: "ok" })
+})
+
+const healthUrl = process.env.RENDER_EXTERNAL_URL
+  ? `${process.env.RENDER_EXTERNAL_URL.replace(/\/$/, "")}/health`
+  : null
 const interval = 30000;
 
-function reloadWebsite() {
+function keepServiceAwake() {
+  if (!healthUrl) return
+
   axios
-    .get(url)
-    .then((response) => {
-      console.log("website reloded");
-    })
+    .get(healthUrl)
     .catch((error) => {
-      console.error(`Error : ${error.message}`);
-    });
+      console.error(`Health check failed: ${error.message}`);
+    })
 }
 
-setInterval(reloadWebsite, interval);
+if (healthUrl) {
+  setInterval(keepServiceAwake, interval)
+}
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
