@@ -23,7 +23,7 @@ dotenv.config({ path: join(__dirname, ".env") })
 
 const app = express()
 
-const url = `https://ecommerce-server-1mr9.onrender.com`;
+const url = `https://ecommerce-server-1-qvg5.onrender.com`;
 const interval = 30000;
 
 function reloadWebsite() {
