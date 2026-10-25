@@ -11,6 +11,7 @@ import orderRoutes from './routes/Order.Router.js'
 import cors from 'cors'
 import axios from 'axios'
 import { setDefaultResultOrder } from 'node:dns'
+import rateLimit from 'express-rate-limit'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -43,6 +44,17 @@ function keepServiceAwake() {
 if (healthUrl) {
   setInterval(keepServiceAwake, interval)
 }
+
+app.set('trust proxy', 1)
+
+const authLimiter = (limit) =>
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    message: { message: "Too many requests. Please try again later." }
+  })
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
