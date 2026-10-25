@@ -2,6 +2,7 @@ import express from 'express'
 import { loginUser, profile } from '../controllers/User.Controller.js'
 import { verifyOtp } from '../controllers/User.Controller.js'
 import { isAuth } from '../middlewares/Auth.Middleware.js'
+import { authLimiter } from '../index.js'
 
 const router = express.Router()
 

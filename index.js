@@ -47,7 +47,7 @@ if (healthUrl) {
 
 app.set('trust proxy', 1)
 
-const authLimiter = (limit) =>
+export const authLimiter = (limit) =>
   rateLimit({
     windowMs: 15 * 60 * 1000,
     limit,
