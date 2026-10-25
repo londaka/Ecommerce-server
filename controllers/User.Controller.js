@@ -3,6 +3,7 @@ import { OTP } from "../models/Otp.js"
 import sendOtp from "../utils/sendOtp.js"
 import { User }  from "../models/User.js"
 import jwt from "jsonwebtoken"
+import { randomInt } from "node:crypto"
 
 
 // Replace ONLY the existing loginUser export in User.Controller.js.
