@@ -5,6 +5,11 @@ import { User }  from "../models/User.js"
 import jwt from "jsonwebtoken"
 
 
+// Replace ONLY the existing loginUser export in User.Controller.js.
+// Keep your existing imports (TryCatch, OTP, sendOtp) and add:
+//   import { randomInt } from "node:crypto"
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
 export const loginUser = TryCatch(async (req, res) => {
   const email = String(req.body.email || "").trim().toLowerCase()
 
@@ -12,17 +17,17 @@ export const loginUser = TryCatch(async (req, res) => {
     return res.status(400).json({ message: "Email is required" })
   }
 
-  const subject = "Your OTP for Login"
-  const otp = Math.floor(100000 + Math.random() * 900000)
-
-  const prevOtp = await OTP.findOne({ email })
-
-  if (prevOtp) {
-    await prevOtp.deleteOne()
+  if (!EMAIL_PATTERN.test(email)) {
+    return res.status(400).json({ message: "Please enter a valid email address" })
   }
 
+  const subject = "Your OTP for Login"
+  const otp = randomInt(100000, 1000000)
+
+  // Send first, so a failed delivery does not destroy the user's previous valid OTP.
   await sendOtp(email, subject, otp)
 
+  await OTP.deleteMany({ email })
   await OTP.create({
     email,
     otp
